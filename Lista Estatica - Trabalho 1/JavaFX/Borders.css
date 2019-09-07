@@ -1,0 +1,5 @@
+.container__border--input {
+    -fx-border-color: white ;
+    -fx-border-width: 2 ; 
+    -fx-border-style: segments(10, 10, 10, 10)  line-cap round ;
+}

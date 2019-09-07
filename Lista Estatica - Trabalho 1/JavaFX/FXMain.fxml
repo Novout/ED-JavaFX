@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane id="AnchorPane" prefHeight="592.0" prefWidth="937.0" styleClass="background" stylesheets="@FXMain.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaFX.FXMain">
+    <children>
+        <Label fx:id="label" layoutX="126" layoutY="120" minHeight="16" minWidth="69" />
+      <ImageView fitHeight="108.0" fitWidth="258.0" layoutX="-3.0" layoutY="485.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../Image/IFMG.png" />
+         </image>
+      </ImageView>
+      <Button layoutX="398.0" layoutY="296.0" mnemonicParsing="false" onAction="#iniciarListaEstatica" prefHeight="60.0" prefWidth="141.0" text="Iniciar" />
+      <Text fill="#32a190" layoutX="14.0" layoutY="68.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Aluno: Giovane Silva Cardoso" wrappingWidth="803.78125">
+         <font>
+            <Font size="60.0" />
+         </font>
+      </Text>
+    </children>
+</AnchorPane>
