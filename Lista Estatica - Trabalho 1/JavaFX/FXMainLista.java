@@ -5,14 +5,10 @@
  */
 package JavaFX;
 
-import AEDS.Principal;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.Initializable;
 import javafx.collections.ObservableList;
-import Usuario.*;
-import java.util.ArrayList;
-import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -20,68 +16,144 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+import Usuario.*;
+import java.io.File;
+import java.io.FileNotFoundException;
 
-public class FXMainLista implements Initializable 
+public final class FXMainLista implements Initializable 
 {
+    /**
+     * Os ArrayList usados são exclusivos do JavaFX, toda a lógica da lista estática não utiliza ArrayList.
+     */
     @FXML
-    private TableView<Login> tableViewLogins;
+    private TableView<Login> tableViewLogins; // TableView
     
     @FXML
-    private TableColumn<Login, String> ColunaNome;
+    private TableColumn<Login, String> ColunaNome; // Coluna do nome de cada usuario
     
     @FXML
-    private TableColumn<Login, Integer> ColunaLogin;
+    private TableColumn<Login, Integer> ColunaLogin; // Coluna do login de cada usuário
     
     @FXML
-    private TableColumn<Login, Integer> ColunaLogout;
+    private TableColumn<Login, Integer> ColunaLogout; // Coluna do logout de cada usuário
     
     @FXML
-    private Button btnCarregar;
+    private Button btnCarregar; // Botao Carregar
     
     @FXML
-    private Button btnAdicionar;
+    private Button btnAdicionar; // Botao Adicionar
     
     @FXML
-    private Button btnRemover;
+    private Button btnRemover; // Botao Remover pela posição
     
     @FXML
-    private Button btnMostraAposHora;
+    private Button btnMostraAposHora; // Botao login após o horário do input
     
     @FXML 
-    private Button btnMostraAcessoUsuario;
+    private Button btnMostraAcessoUsuario; // Botao procurar usuário baseado na string digitada no input
     
     @FXML
-    private Button btnRemoverUsuario;
+    private Button btnRemoverUsuario; // Remover usuários com a média de tempo menor que o input
     
     @FXML
-    private Button btnOrdenarListar;
+    private Button btnOrdenarListar; // Mostra uma cópia ordenada de forma decrescente
     
     @FXML
-    private TextField txtNome;
+    private TextField txtNome; // Campo do input de nome
     
     @FXML
-    private TextField txtLogin;
+    private TextField txtLogin; // Campo do input de login
     
     @FXML
-    private TextField txtLogout;
+    private TextField txtLogout; // Campo do input de logout
     
     @FXML
-    private TextField txtInput;
+    private TextField txtInput; // Campo do input auxiliar dos botões
     
-    private final List<Login> listUsuarios = new ArrayList<>();
+    /**
+     * Tanto o List quanto o ArrayList serve apenas para colocar o conteúdo que está no logins no table do JavaFX, servindo APENAS como auxiliar.
+     */
+    private final List<Login> listLogins; 
     
-    private ObservableList<Login> obsUsuario;
+    private ObservableList<Login> obsLogin;
     
-    private final Logins logins = new Logins();
+    /**
+     * Construção da lista
+     */
+    private final Logins logins;
+    
+    private Scanner testeTP1;
+    
+    /**
+     * Construtor que inclue todo o conteúdo do testeTP1.txt na lista
+     */
+    public FXMainLista() 
+    {
+        int aux = 0; // Auxiliador para identificar tipo de entrada, em 0 (nome) / 1 (login) / 2 (logout)
+        
+        /* Auxiliadores do input */
+        String nome = "NULL";
+        int login = 0;
+        int logout = 0;
+        
+        /* Construindo */
+        this.listLogins = new ArrayList<>(); // Array auxiliar para mostrar conteúdos no tableView
+        this.logins = new Logins(); // lista estática
+       
+        try 
+        {
+            this.testeTP1 = new Scanner(new File("C:\\dev\\java\\AEDS\\src\\testeTP1.txt")); // Carregar diretório do .txt
+        }catch(FileNotFoundException e) 
+        {
+            System.out.println("Arquivo não foi encontrado: "+e.getMessage());
+            return;
+        }
+        
+        /* Carregar todo o conteúdo do .txt */
+        while(this.testeTP1.hasNextLine()) 
+        {
+            switch (aux) 
+            {
+                case 0:
+                    nome = this.testeTP1.nextLine();
+                    aux++;
+                    break;
+                case 1:
+                    login = this.testeTP1.nextInt();
+                    aux++;
+                    break;
+                case 2:
+                    logout = this.testeTP1.nextInt();
+                    this.adicionar(nome, login, logout); // Cria um novo objeto com os parâmetros recebidos
+                    aux = 0;
+                    break;
+                default:           
+                    break;
+            }
+        }
+    }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) 
     {
+        this.carregarGeral(); /* Recarrega a lista mostrando os dados iniciais */
         
+        this.fixInitialInput(); /* Arruma o problema de espacamento dos nomes inicias */
     }    
     
+    public void fixInitialInput() 
+    {
+        for(int i = 0; i < this.logins.getTotalDeUsuarios();i++) 
+        {
+            this.logins.buscar(i).setNome(this.logins.buscar(i).getNome().replace(" ", ""));
+        }
+    }
+    
     /**
-     * Remove da lista a posicao escolhida
+     * Remove da lista a posicao colocada no input
      */
     public void removerDaLista() 
     {
@@ -89,6 +161,7 @@ public class FXMainLista implements Initializable
         
         try 
         {
+            /* Verifica se a posicao do input e valida */
             if(this.logins.getTotalDeUsuarios() > Integer.parseInt(this.txtInput.getText()))
                 this.logins.remover(Integer.parseInt(this.txtInput.getText()));
         }catch(Exception e) 
@@ -99,23 +172,56 @@ public class FXMainLista implements Initializable
         this.carregar();       
     }
     
+    /**
+     * Adiciona o conteudo de testeTP1.txt
+     * @param nome nome recebido do .txt
+     * @param login login recebido do .txt
+     * @param logout logout recebido do .txt
+     */
+    public void adicionar(String nome, int login, int logout) 
+    {
+        try 
+        {
+            /* Verifica se os logins e logouts estão entre 0 e 23*/
+            /* Verifica se o tempo de logout é maior que o de login*/
+            if((login >= 0 && login <=23) && (logout >= 0 && logout <= 23) && (login < logout)) 
+            {
+                Login index = new Login(nome, login, logout); // Novo objeto
+                
+                this.logins.adicionar(index); // Adiciona a nova instância do objeto na lista
+
+            }else {
+                System.out.println("Input inválido");
+            }
+            
+            
+        }catch(Exception e) 
+        {
+            System.out.println("adicionar: "+e.getMessage());
+        }
+    }
+    
+    /**
+     * Adiciona ao final da lista
+     */
     public void adicionar() 
     {
         try 
         {
-            this.limpar();
+            this.limpar(); // Da clear na Table
             
-            int loginAux = Integer.parseInt(this.txtLogin.getText());
-            int logoutAux = Integer.parseInt(this.txtLogout.getText());
+            int loginAux = Integer.parseInt(this.txtLogin.getText()); // Converte o input para inteiro
+            int logoutAux = Integer.parseInt(this.txtLogout.getText()); // Converte o input para inteiro
             
             if((loginAux >= 0 && loginAux <=23) && (logoutAux >= 0 && logoutAux <= 23) && (loginAux < logoutAux)) 
             {
-                Login index = new Login(this.txtNome.getText(), loginAux, logoutAux);
+                Login index = new Login(this.txtNome.getText(), loginAux, logoutAux); // Novo objeto
                 
-                this.logins.adicionar(index);
+                this.logins.adicionar(index); // Adicionando o objeto ao fim da lista
             
-                this.carregar();
+                this.carregar(); // Carrega o novo Login no Table
 
+                // clear nos input's
                 this.txtNome.clear();
                 this.txtLogin.clear();
                 this.txtLogout.clear();
@@ -130,22 +236,26 @@ public class FXMainLista implements Initializable
         }
     }
     
+    /**
+     * Carrega todo o conteúdo do Logins no listLogins, para mostrar na Table
+     */
     public void carregar() 
     { 
         try 
         {
+            /* Table View */
             ColunaNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
             ColunaLogin.setCellValueFactory(new PropertyValueFactory<>("login"));
             ColunaLogout.setCellValueFactory(new PropertyValueFactory<>("logout"));
             
             for(int i = 0;i < this.logins.getTotalDeUsuarios();i++) 
             {     
-                this.listUsuarios.add(this.logins.buscar(i));   
+                this.listLogins.add(this.logins.buscar(i)); // Adiciona todos os itens do Logins no ArrayList
             }
         
-            this.obsUsuario = FXCollections.observableArrayList(this.listUsuarios);
+            this.obsLogin = FXCollections.observableArrayList(this.listLogins);
 
-            this.tableViewLogins.setItems(this.obsUsuario); 
+            this.tableViewLogins.setItems(this.obsLogin); // Seta o ArrayList na table
             
         }catch(Exception e) 
         {
@@ -153,18 +263,22 @@ public class FXMainLista implements Initializable
         }
     }
     
+    /**
+     * Carrega todo o conteúdo do Logins no listLogins, para mostrar na Table
+     * @param index logins auxiliar para a lista decrescente, nao mexendo com o logins principal
+     */
     public void carregar(Logins index) 
     {
        try 
         {
             for(int i = 0;i < index.getTotalDeUsuarios();i++) 
             {     
-                this.listUsuarios.add(index.buscar(i));   
+                this.listLogins.add(index.buscar(i)); //Adiciona todo o conteudo da lista no ArrayList
             }
         
-            this.obsUsuario = FXCollections.observableArrayList(this.listUsuarios);
+            this.obsLogin = FXCollections.observableArrayList(this.listLogins); // Seta o ArrayList
 
-            this.tableViewLogins.setItems(this.obsUsuario); 
+            this.tableViewLogins.setItems(this.obsLogin); //Exibe a table
             
         }catch(Exception e) 
         {
@@ -179,6 +293,7 @@ public class FXMainLista implements Initializable
         this.carregar();
     }
     
+    /* Mostra todos os usuários após uma determinada inserida no input*/
     public void mostraAposHora() 
     {
         try 
@@ -189,12 +304,12 @@ public class FXMainLista implements Initializable
             
             if(this.logins.getTotalDeUsuarios() != 0)
                 for(int i = 0;i < this.logins.getTotalDeUsuarios();i++) 
-                    if(this.logins.buscar(i).getLogin() > index)
-                        this.listUsuarios.add(this.logins.buscar(i));   
+                    if(this.logins.buscar(i).getLogin() > index) // Se a hora de login for maior que a do input
+                        this.listLogins.add(this.logins.buscar(i)); // Adiciona o objeto na ArrayList
         
-            this.obsUsuario = FXCollections.observableArrayList(this.listUsuarios);
+            this.obsLogin = FXCollections.observableArrayList(this.listLogins);
 
-            this.tableViewLogins.setItems(this.obsUsuario); 
+            this.tableViewLogins.setItems(this.obsLogin); 
             
         }catch(Exception e) 
         {
@@ -202,6 +317,7 @@ public class FXMainLista implements Initializable
         }
     }
     
+    /* Procura o usuário inserido no array*/
     public void mostraAcessoUsuario() 
     { 
         String index = this.txtInput.getText();
@@ -211,12 +327,12 @@ public class FXMainLista implements Initializable
         {   
             if(this.logins.getTotalDeUsuarios() != 0)
                 for(int i = 0;i < this.logins.getTotalDeUsuarios();i++) 
-                    if(this.logins.buscar(i).getNome() == null ? index == null : this.logins.buscar(i).getNome().equals(index))
-                        this.listUsuarios.add(this.logins.buscar(i));   
+                    if(this.logins.buscar(i).getNome().equals(index)) // Se o nome do usuario for igual ao do index
+                        this.listLogins.add(this.logins.buscar(i)); // Adiciona no ArrayList
         
-            this.obsUsuario = FXCollections.observableArrayList(this.listUsuarios);
+            this.obsLogin = FXCollections.observableArrayList(this.listLogins);
 
-            this.tableViewLogins.setItems(this.obsUsuario); 
+            this.tableViewLogins.setItems(this.obsLogin); 
             
         }catch(Exception e) 
         {
@@ -230,17 +346,26 @@ public class FXMainLista implements Initializable
         
         this.limpar();
         
+        /* Três loops para garantir que removeu todos os itens das condições, não é nada eficiente mas funciona.*/
         if(this.logins.getTotalDeUsuarios() != 0)
             for(int i = 0;i < this.logins.getTotalDeUsuarios();i++) 
-                if(this.logins.buscar(i).getMedia() < index)
-                    this.logins.remover(i);
+                for(int j = 0;j < this.logins.getTotalDeUsuarios();j++) 
+                    for(int k = 0;k < this.logins.getTotalDeUsuarios();k++) 
+                        if(this.logins.buscar(k).getMedia() < index)
+                            this.logins.remover(k);
         
         this.carregar();
     }
     
+    /**
+     * Ordenar em ordem decrescente um logins auxiliar e não o principal
+     * @return index retorno o logins em ordem decrescente
+     */
     public Logins OrdenarUsuarios() 
     {
         Logins index = new Logins();
+        
+        /* Copia o conteúdo do logins para o index */
         for(int i = 0;i < this.logins.getTotalDeUsuarios();i++) 
         {
             index.adicionar(this.logins.buscar(i));
@@ -249,7 +374,7 @@ public class FXMainLista implements Initializable
         this.limpar();
             
         /**
-          * Conseguir ordenar em ordem decrescente
+          * Sort básico para conseguir ordenar em ordem decrescente
           */ 
         if(index.getTotalDeUsuarios() != 0)
             for(int i = 0;i < index.getTotalDeUsuarios() - 1;i++) 
@@ -261,20 +386,22 @@ public class FXMainLista implements Initializable
                         index.setLogin(aux, j + 1);
                     }
         
-        return index;
+        return index; // Retorno do logins auxiliar
     }
     
+    /* Ação do botao para ordenar em ordem decrescente */
     public void OrdenarUsuariosAction() 
     {
         this.carregar(this.OrdenarUsuarios());
     }
     
+    /* Limpa a lista auxiliar */
     public void limpar() 
     {
         try 
         {
             if(this.logins.getTotalDeUsuarios() != 0) 
-                this.listUsuarios.clear(); 
+                this.listLogins.clear(); 
             
         }catch(Exception e) 
         {

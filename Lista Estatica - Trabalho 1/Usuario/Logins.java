@@ -1,9 +1,5 @@
 package Usuario;
 
-/**
- *
- * @author User
- */
 public class Logins {
     private Login[] logins;
     private int totalDeLogins;
@@ -47,7 +43,7 @@ public class Logins {
     /**
      * 
      * @param pos Posicao de um Login na Lista
-     * @return Login
+     * @return login da posição
      */
     public Login buscar(int pos) 
     {
@@ -66,9 +62,7 @@ public class Logins {
     {
         Login[] index = new Login[this.logins.length + 10];
         
-        /*  for(int i = 0;i < this.totalDeLogins;i++)
-                index[i] = this.logins[i];
-        */
+        /* Mesma coisa que: for(int i = 0;i < this.totalDeLogins;i++) { index[i] = this.logins[i]; } */
         
         System.arraycopy(this.logins, 0, index, 0, this.totalDeLogins);
         

@@ -16,6 +16,14 @@ public class Principal extends Application
     @Override
     public void start(Stage stage) throws Exception 
     {
+        /* Precisa trocar o diretório de input do .txt em: (FXMainLista.java) linha 108 */
+        
+        /* Não foi possível fazer a número um pois o tableView do JavaFX retorna um valor para exibir visualmente,
+         * nao sendo possível colocar na frente login e logout de um mesmo usuário.
+         */
+        
+        /* Github da atividade: https://github.com/Novout/ED-JavaFX */
+        
         fixStage = stage; // Trabalhar com o stage do JavaFX de forma facilitada
         Parent initial = FXMLLoader.load(getClass().getResource("/JavaFX/FXMain.fxml")); // Carregar FXML da tela inicial
         Parent main = FXMLLoader.load(getClass().getResource("/JavaFX/FXMainLista.fxml")); // Carregar FXML da tela principal

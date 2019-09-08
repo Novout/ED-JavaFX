@@ -8,8 +8,7 @@ public class Login {
     
     public Login() 
     {
-        this.nome = "NULL";
-        
+        this.nome = "NULL";    
         this.login = 0;
         this.logout = 0;
     }
@@ -30,12 +29,12 @@ public class Login {
     }
     
     @Override
-    public String toString() 
+    public String toString() // Para testes
     {
-        return "Nome: "+this.nome+"      Login: "+this.login+":00"+" | Logout: "+this.logout+":00";
+        return "Nome: "+this.nome+"Login: "+this.login+":00"+" | Logout: "+this.logout+":00";
     }
     
-    public int getMedia() 
+    public int getMedia() // Total de tempo logado
     {
         return this.logout - this.login;
     }

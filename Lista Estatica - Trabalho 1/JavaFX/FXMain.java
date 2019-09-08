@@ -11,15 +11,15 @@ public class FXMain implements Initializable
 {
     
     @FXML
-    private Label label;
+    private Label label; // Label tela inicial
     
     @Override
-    public void initialize(URL url, ResourceBundle rb) 
+    public void initialize(URL url, ResourceBundle rb) // Função padrão do JavaFX
     {
         // TODO
     }    
     
-    public void iniciarListaEstatica() 
+    public void iniciarListaEstatica() // Ação do botao de iniciar
     {
         Principal.trocarTela("lista");
     }
