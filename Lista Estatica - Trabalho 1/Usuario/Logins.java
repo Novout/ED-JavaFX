@@ -60,7 +60,7 @@ public class Logins {
      */
     public void expandirLista() 
     {
-        Login[] index = new Login[this.logins.length + 10];
+        Login[] index = new Login[this.logins.length += 10];
         
         /* Mesma coisa que: for(int i = 0;i < this.totalDeLogins;i++) { index[i] = this.logins[i]; } */
         
